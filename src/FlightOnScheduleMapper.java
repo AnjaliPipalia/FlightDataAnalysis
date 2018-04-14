@@ -9,8 +9,8 @@ public class FlightOnScheduleMapper extends Mapper<LongWritable, Text, Text, Int
 	public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 		 String line = value.toString();
 	        String[] lineSplit = line.split(",");
-	        // value = { PI, 23}
-	        if(lineSplit[8]!="NA" && lineSplit[14]!="NA"){
+	        	        // value = { PI, 23}
+	        if(!lineSplit[8].equals("NA") && !lineSplit[14].equals("NA") && !lineSplit[8].equals("UniqueCarrier") && !lineSplit[14].equals("ArrDelay")){
 	        	context.write(new Text(lineSplit[8]), new IntWritable(Integer.parseInt(lineSplit[14])));
 	        }
 	}
