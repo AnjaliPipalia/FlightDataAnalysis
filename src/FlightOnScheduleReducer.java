@@ -18,16 +18,16 @@ public class FlightOnScheduleReducer extends Reducer<Text, IntWritable, Text, Do
 			count++;
 			tempVal = val.get();
 			if (tempVal < 10) {
+
 				numberOfOnScheduledFlight++;
 			}
 		}
-		double probability = (double) (numberOfOnScheduledFlight / count);
-		top3.add(new OnScheduledFlightWithHighestProbability(key, probability));
-
+		double probability = (double) (numberOfOnScheduledFlight) / (double) (count);
+		top3.add(new OnScheduledFlightWithHighestProbability(key.toString(), probability));
 		if (top3.size() > 3) {
 			top3.pollLast();
 		}
-		bottom3.add(new OnScheduledFlightWithLowestProbability(key, probability));
+		bottom3.add(new OnScheduledFlightWithLowestProbability(key.toString(), probability));
 
 		if (bottom3.size() > 3) {
 			bottom3.pollLast();
@@ -40,22 +40,22 @@ public class FlightOnScheduleReducer extends Reducer<Text, IntWritable, Text, Do
 			throws IOException, InterruptedException {
 		context.write(new Text("highest probability for being on schedule"), null);
 		for (OnScheduledFlightWithHighestProbability key : top3) {
-			context.write(key.uniqueID, new DoubleWritable(key.probability));
+			context.write(new Text(key.uniqueID), new DoubleWritable(key.probability));
 		}
 		context.write(new Text("lowest probability for being on schedule"), null);
 		for (OnScheduledFlightWithLowestProbability key : bottom3) {
-			context.write(key.uniqueID, new DoubleWritable(key.probability));
+			context.write(new Text(key.uniqueID), new DoubleWritable(key.probability));
 		}
 	}
 
 	public class OnScheduledFlightWithHighestProbability
 			implements Comparable<OnScheduledFlightWithHighestProbability> {
 		double probability;
-		Text uniqueID;
+		String uniqueID;
 
-		OnScheduledFlightWithHighestProbability(Text uniqueID, double probability) {
+		OnScheduledFlightWithHighestProbability(String string, double probability) {
 			this.probability = probability;
-			this.uniqueID = uniqueID;
+			this.uniqueID = string;
 		}
 
 		@Override
@@ -73,11 +73,11 @@ public class FlightOnScheduleReducer extends Reducer<Text, IntWritable, Text, Do
 
 	public class OnScheduledFlightWithLowestProbability implements Comparable<OnScheduledFlightWithLowestProbability> {
 		double probability;
-		Text uniqueID;
+		String uniqueID;
 
-		OnScheduledFlightWithLowestProbability(Text uniqueID, double probability) {
+		OnScheduledFlightWithLowestProbability(String string, double probability) {
 			this.probability = probability;
-			this.uniqueID = uniqueID;
+			this.uniqueID = string;
 		}
 
 		@Override
